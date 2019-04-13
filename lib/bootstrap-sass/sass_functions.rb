@@ -1,4 +1,5 @@
 require 'sass'
+require 'sassc'
 
 module Sass::Script::Functions
   # LARS: Snatched from compass - 2011-11-29 - used for gradients in IE6-9

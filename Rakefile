@@ -8,6 +8,7 @@ end
 desc 'Dumps output to a CSS file for testing'
 task :debug do
   require 'sass'
+  require 'sassc'
   require './lib/bootstrap-sass/compass_functions'
   require './lib/bootstrap-sass/sass_functions'
   path = './vendor/assets/stylesheets'
