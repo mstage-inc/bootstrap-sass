@@ -1,50 +1,68 @@
 module Bootstrap
-  class FrameworkNotFound < StandardError; end
+  class << self
+    # Inspired by Kaminari
+    def load!
+      register_compass_extension if compass?
 
-  # Inspired by Kaminari
-  def self.load!
-    if compass?
-      require 'bootstrap-sass/compass_functions'
-      register_compass_extension
-    elsif asset_pipeline?
-      require 'bootstrap-sass/sass_functions'
+      if rails?
+        register_rails_engine
+      elsif sprockets?
+        register_sprockets
+      elsif defined?(::Sass) && ::Sass.respond_to?(:load_paths)
+        # The deprecated `sass` gem:
+        ::Sass.load_paths << stylesheets_path
+      end
     end
 
-    if rails?
-      require 'sassc-rails'
-      register_rails_engine
+    # Paths
+    def gem_path
+      @gem_path ||= File.expand_path '..', File.dirname(__FILE__)
     end
 
-    if !(rails? || compass?)
-      raise Bootstrap::FrameworkNotFound, "bootstrap-sass requires either Rails > 3.1 or Compass, neither of which are loaded"
+    def stylesheets_path
+      File.join assets_path, 'stylesheets'
     end
 
-    stylesheets = File.expand_path(File.join("..", 'vendor', 'assets', 'stylesheets'))
-    ::Sass.load_paths << stylesheets
-  end
+    def javascripts_path
+      File.join assets_path, 'javascripts'
+    end
 
-  private
-  def self.asset_pipeline?
-    defined?(::Sprockets)
-  end
+    def assets_path
+      @assets_path ||= File.join gem_path, 'vendor', 'assets'
+    end
 
-  def self.compass?
-    defined?(::Compass)
-  end
+    # Environment detection helpers
+    def sprockets?
+      defined?(::Sprockets)
+    end
 
-  def self.rails?
-    defined?(::Rails)
-  end
+    def compass?
+      defined?(::Compass::Frameworks)
+    end
 
-  def self.register_compass_extension
-    base = File.join(File.dirname(__FILE__), '..')
-    styles = File.join(base, 'vendor', 'assets', 'stylesheets')
-    templates = File.join(base, 'templates')
-    ::Compass::Frameworks.register('bootstrap', :path => base, :stylesheets_directory => styles, :templates_directory => templates)
-  end
+    def rails?
+      defined?(::Rails)
+    end
 
-  def self.register_rails_engine
-    require 'bootstrap-sass/engine'
+    private
+
+    def register_compass_extension
+      ::Compass::Frameworks.register(
+        'bootstrap',
+        path:                  gem_path,
+        stylesheets_directory: stylesheets_path,
+        templates_directory:   File.join(gem_path, 'templates')
+      )
+    end
+
+    def register_rails_engine
+      require 'bootstrap-sass/engine'
+    end
+
+    def register_sprockets
+      Sprockets.append_path(stylesheets_path)
+      Sprockets.append_path(javascripts_path)
+    end
   end
 end
 

@@ -4,3 +4,5 @@ bootstrap.css
 bootstrap-responsive.css
 Gemfile.lock
 .rvmrc
+.bundle
+vendor/bundle

@@ -11,6 +11,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'sassc-rails', '>= 1.0'
   s.add_runtime_dependency     'sassc',       '>= 1.12.1'
 
+  s.add_development_dependency 'test-unit'
+
   s.files      = `git ls-files`.split("\n")
   s.test_files = `git ls-files -- test/*`.split("\n")
 end

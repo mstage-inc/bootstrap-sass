@@ -7,13 +7,10 @@ end
 
 desc 'Dumps output to a CSS file for testing'
 task :debug do
-  require 'sass'
   require 'sassc'
-  require './lib/bootstrap-sass/compass_functions'
-  require './lib/bootstrap-sass/sass_functions'
   path = './vendor/assets/stylesheets'
   %w(bootstrap bootstrap-responsive).each do |file|
-    engine = Sass::Engine.for_file("#{path}/#{file}.scss", syntax: :scss, load_paths: [path])
+    engine = SassC::Engine.new(File.read("#{path}/#{file}.scss"), syntax: :scss, load_paths: [path])
     File.open("./#{file}.css", 'w') { |f| f.write(engine.render) }
   end
 end
